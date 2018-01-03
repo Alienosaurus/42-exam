@@ -1,48 +1,64 @@
-static int		count_words(char *str)
+#include <stdlib.h>
+
+int		count_words(char *str)
 {
-	int		i;
 	int		count;
 
-	i = 0;
 	count = 0;
-	while (str && str[i])
+	while (*str)
 	{
-		while (str[i] && (str[i] == ' ' || str[i] == '\t'))
-			i++;
-		if (str[i])
+		while (*str && (*str == ' ' || *str == '\n' || *str == '\t'))
+			str++;
+		if (*str && *str != ' ' && *str != '\n' && *str != '\t')
 		{
 			count++;
-			while (str[i] && str[i] != ' ' && str[i] != '\t')
-				i++;
+			while (*str && *str != ' ' && *str != '\n' && *str != '\t')
+				str++;
 		}
 	}
 	return (count);
 }
 
-char			**ft_split(char *str)
+char	*malloc_word(char *str)
 {
-	char	**split;
+	char	*word;
 	int		i;
-	int		j;
-
+	
 	i = 0;
-	j = 0;
-	if (!(split = (char **)malloc(sizeof(char *) * (count_words(str) + 1))))
-		return (split);
-	while (str && str[i])
+	while (str[i] && str[i] != ' ' && str[i] != '\n' && str[i] != '\t')
+		i++;
+	word = (char *)malloc(sizeof(char) * (i + 1));
+	i = 0;
+	while (str[i] && str[i] != ' ' && str[i] != '\n' && str[i] != '\t')
 	{
-		while (*str && (*str == ' ' || *str == '\t'))
+		word[i] = str[i];
+		i++;
+	}
+	word[i] = '\0';
+	return (word);
+}
+
+char	**ft_split(char *str)
+{
+	int		words;
+	char	**tab;
+	int		i;
+
+	words = count_words(str);
+	tab = (char **)malloc(sizeof(char*) * (words + 1));
+	i = 0;
+	while (*str)
+	{
+		while (*str && (*str == ' ' || *str == '\n' || *str == '\t'))
 			str++;
-		if (*str)
+		if (*str && *str != ' ' && *str != '\n' && *str != '\t')
 		{
-			while (str[i] && str[i] != ' ' && str[i] != '\t')
-				i++;
-			split[j] = ft_strndup(str, i);
-			j++;
-			str = str + i;
-			i = 0;
+			tab[i] = malloc_word(str);
+			i++;
+			while (*str && *str != ' ' && *str != '\n' && *str != '\t')
+				str++;
 		}
 	}
-	split[j] = NULL;
-	return (split);
+	tab[i] = NULL;
+	return (tab);
 }
